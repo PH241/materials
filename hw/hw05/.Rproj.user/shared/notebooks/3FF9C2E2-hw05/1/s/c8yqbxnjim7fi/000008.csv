@@ -1,0 +1,4 @@
+"0","library(readr)"
+"0","library(knitr)"
+"0","oral_cancer <- read_csv(""data/hw05_data.csv"")"
+"0","kable(oral_cancer, caption = 'Oral Cancer')"

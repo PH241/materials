@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1547020583012.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "C6816FB7",
+    "lastKnownWriteTime" : 1547020643,
+    "last_content_update" : 1547020643434,
+    "path" : "~/coding/PH241/hw/hw05/data/hw05_data.csv",
+    "project_path" : "data/hw05_data.csv",
+    "properties" : {
+        "cursorPosition" : "2,24",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "text"
+}
