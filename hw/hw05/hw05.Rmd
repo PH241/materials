@@ -10,8 +10,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-1. The table below summarizes data from a traditional case-control study of oral cancer in females and
-employment in the textile industry.
+1. The table below summarizes data from a traditional case-control study of oral cancer in females and employment in the textile industry.
 
 ```{r table, warning=FALSE, message=FALSE, echo=FALSE}
 library(readr)
@@ -36,11 +35,18 @@ kable(oral_cancer, caption = 'Oral Cancer')
 
 (h) Construct a 90% confidence interval for the odds ratio using the small-sample adjustment presented in class. Compare the results to those obtained above and comment.
 
-(i) Obtain a 
+(i) Obtain an exact 90% confidence interval for the odds ratio and comment. Hint: Use the `qnorm()` command in base R to help you with the calculation.
+
+2. Tuyns et al. (1977) carried out a case-control study of esophageal cancer in Ille-et-Vilaine in Brittany, France. The data set, _oesoph_ is available on the bCourses website. One risk factor of interest was daily alcohol consumption, measured in grams per day, given in the data set in four levels: 0 to 39 `(alcgp=0)`, 40 to 79 `(alcgp=1)`, 80 to 120 `(alcgp=2)`, and > (120 g/day) `(alcgp=3)`.
+
+(a) Download the data set from bCourses, and add it to your `data` folder into the hw05 directory. Create a new categorical column in your data that equals 1 if an individual's alcohol consumption is at least 80 g/day and 0 otherwise. Tabulate the binary alcohol variable against the original one to make sure you have what you want. Then, generate a 2 x 2 table that breaks down the sample by case status and this binary risk factor. You may find the following R command useful for this: `ifelse()`, `tabulate()`, `aggregate()`
+
+(b) Calculate a 95% confidence interval that is based on the normal approximation using the R command `qnorm()` and a bit of nifty arithmetic.
+
+(c) Compare the confidence interval in (b) to an exact interval (?)
 
 
-
-
+(d) Also example the relationship between the risk for esophageal cancer and the dichotomized measure of alcohol consumption using the $\chi^2$ test in R. The following R commands may be useful for this: `pchisq()`
 
 
 
