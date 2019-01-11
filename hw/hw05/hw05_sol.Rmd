@@ -26,7 +26,7 @@ kable(oral_cancer, caption = 'Oral Cancer')
 
 (b) Calculate an estimate of the variance of the log of your point estimate from (a).
 
-(c) Construct an approximate 90% confidence interval for the log odds ratio of oral cancer associated with having been employed in the  textile industry for 10 or more years. Hint: Use the base R function `qnorm()` to compute the correct $z$-value.
+(c) Construct an approximate 90% confidence interval for the log odds ratio of oral cancer associated with having been employed in the  textile industry for 10 or more years. Hint: Use the base R function `qnorm()` to compute the correct _z_-value
 
 (d) Construct an approximate 90% confidence interval for the odds ratio of oral cancer associated with having been employed in the textile industry for 10 or more years.
 
@@ -39,32 +39,46 @@ kable(oral_cancer, caption = 'Oral Cancer')
 (h) Construct a 90% confidence interval for the odds ratio using the small-sample adjustment presented in class. Compare the results to those obtained above and comment.
 
 (i) Obtain an exact 90% confidence interval for the odds ratio and comment. *Hint: Use the `epitab()` command in base R to help you with the calculation. You will need to use the "fisher" argument to calculate an exact confidence since `epitab()` uses a normal (Wald) approximation by default.*
-```{r}
 
+```{r}
+epitab(c(16, 24, 8, 32), conf.level = 0.90, oddsratio = "fisher")
 ```
+The exact confidence interval (1.03, 7.04) is substantially wider than the approximate confidence intervals calculated above, even if small-sample adjustments are used. The normal approximation that forms the basis for those approximate confidence intervals may not be appropriate.
 
 2. Tuyns et al. (1977) carried out a case-control study of esophageal cancer in Ille-et-Vilaine in Brittany, France. The data set, _oesoph_ is available on the bCourses website. One risk factor of interest was daily alcohol consumption, measured in grams per day, given in the data set in four levels: 0 to 39 `(alcgp=0)`, 40 to 79 `(alcgp=1)`, 80 to 120 `(alcgp=2)`, and > 120 g/day `(alcgp=3)`.
 
 (a) Download the `oesoph` data set from bCourses, and add it to your `data` folder in the hw05 directory. Create a new categorical column in your data that equals 1 if an individual's alcohol consumption is at least 80 g/day and 0 otherwise. Tabulate the binary alcohol variable against the original one to make sure you have what you want. Then, generate a 2 x 2 table that breaks down the sample by case status and this binary risk factor. You may find the following R commands useful for this: `ifelse()`, `mutate()`, `table()`, `aggregate()`, and `epitable()`.
-```{r}
 
+
+```{r}
+oesoph <- read.dta("data/oesoph.dta")
+oesoph <- mutate(oesoph, alc = as.numeric(oesoph$alcgp >= 2))   # create new variable
+table(oesoph$alc, oesoph$alcgp, dnn = c("alc", "alcgp"))        # tabulate against original
+
+oesoph.agg <- aggregate(oesoph, by = list(oesoph$casestatus, oesoph$alc), FUN = sum)
+alc.by.case <- epitable(oesoph.agg$freq)
 ```
 
 
 (b) Calculate a 95% confidence interval that is based on the normal approximation using the R command `epitab()`.
-```{r}
 
+```{r}
+epitab(alc.by.case)
 ```
 
 (c) Compare the confidence interval in (b) to an exact 95% confidence interval obtained through `epitab()` with the `"fisher"` option for the `oddsratio` parameter. Is the sample size large enough to warrant the normal approximation used to construct the confidence interval in (b) or do we need to use an exact confidence interval?
-```{r}
 
+```{r}
+epitab(alc.by.case, oddsratio = "fisher")
+epi.2by2(alc.by.case)
 ```
+The end points of the approximate confidence interval are less than 2% off from those of the exact confidence interval. The sample sizes of cases and controls appear large enough to justify the normal approximation.
 
 (d) Also examine the relationship between the risk for esophageal cancer and the dichotomized measure of alcohol consumption using the $\chi^2$ test in R. Compare your conclusions to those based on the confidence intervals computed in (b) and (c). The following R commands may be useful for this: `chisq.test()`, `pchisq()`. *Remember to use turn off Yate's correction for the $\chi^2$ test and set `lower.tail = FALSE` for `pchisq()`.*
 ```{r}
-
+chisq.test(alc.by.case, correct = FALSE)
+pchisq(110.26, df = 1, lower.tail = FALSE) 
 ```
-
+Like the confidence interval, the $\chi^2$ test provides strong evidence against the null hypothesis that alcohol consumption is independent of the risk of esophageal cancer.
 
 

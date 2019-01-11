@@ -23,22 +23,32 @@ kable(oral_cancer, caption = 'Oral Cancer')
 ```
 
 (a) Calculate a point estimate for the odds ratio of oral cancer associated with having been employed in the textile industry for 10 or more years.
+\vspace{200pt}
 
 (b) Calculate an estimate of the variance of the log of your point estimate from (a).
+\newpage
 
-(c) Construct an approximate 90% confidence interval for the log odds ratio of oral cancer associated with having been employed in the  textile industry for 10 or more years. Hint: Use the base R function `qnorm()` to compute the correct $z$-value.
+(c) Construct an approximate 90% confidence interval for the log odds ratio of oral cancer associated with having been employed in the  textile industry for 10 or more years. Hint: Use the base R function `qnorm()` to compute the correct $z$-value. 
+\vspace{200pt}
 
 (d) Construct an approximate 90% confidence interval for the odds ratio of oral cancer associated with having been employed in the textile industry for 10 or more years.
+\vspace{200pt}
 
 (e) Does the confidence interval provide evidence against the null hypothesis that employment history in the textile industry and the risk for oral cancer are independent of each other in the target population?
+\newpage
 
 (f) Carry out the $\chi^2$ test of independence. At a significance level of 10%, does the test accept or reject the null hypothesis of independence between employment history and the risk for oral cancer? Do these results agree with those based on the confidence interval calculation?
+\vspace{200pt}
 
 (g) Compute a point estimate for the odds ratio using the small-sample adjustment for obtaining a direct odds ratio estimate (rather than a point estimate on the log scale). Compare your point estimate to the one obtained in (a) and comment.
+\vspace{200pt}
 
 (h) Construct a 90% confidence interval for the odds ratio using the small-sample adjustment presented in class. Compare the results to those obtained above and comment.
+\newpage
 
 (i) Obtain an exact 90% confidence interval for the odds ratio and comment. *Hint: Use the `epitab()` command in base R to help you with the calculation. You will need to use the "fisher" argument to calculate an exact confidence since `epitab()` uses a normal (Wald) approximation by default.*
+\vspace{180pt}
+
 ```{r}
 
 ```
@@ -46,17 +56,24 @@ kable(oral_cancer, caption = 'Oral Cancer')
 2. Tuyns et al. (1977) carried out a case-control study of esophageal cancer in Ille-et-Vilaine in Brittany, France. The data set, _oesoph_ is available on the bCourses website. One risk factor of interest was daily alcohol consumption, measured in grams per day, given in the data set in four levels: 0 to 39 `(alcgp=0)`, 40 to 79 `(alcgp=1)`, 80 to 120 `(alcgp=2)`, and > 120 g/day `(alcgp=3)`.
 
 (a) Download the `oesoph` data set from bCourses, and add it to your `data` folder in the hw05 directory. Create a new categorical column in your data that equals 1 if an individual's alcohol consumption is at least 80 g/day and 0 otherwise. Tabulate the binary alcohol variable against the original one to make sure you have what you want. Then, generate a 2 x 2 table that breaks down the sample by case status and this binary risk factor. You may find the following R commands useful for this: `ifelse()`, `mutate()`, `table()`, `aggregate()`, and `epitable()`.
+\vspace{150pt}
+
+
 ```{r}
 
 ```
 
 
 (b) Calculate a 95% confidence interval that is based on the normal approximation using the R command `epitab()`.
+\newpage
+
 ```{r}
 
 ```
 
 (c) Compare the confidence interval in (b) to an exact 95% confidence interval obtained through `epitab()` with the `"fisher"` option for the `oddsratio` parameter. Is the sample size large enough to warrant the normal approximation used to construct the confidence interval in (b) or do we need to use an exact confidence interval?
+\vspace{200pt}
+
 ```{r}
 
 ```
