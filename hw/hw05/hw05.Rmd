@@ -18,7 +18,7 @@ library(readr)
 library(knitr)
 library(epitools)
 library(foreign)
-oral_cancer <- read_csv("data/hw05_data.csv")
+oral_cancer <- read_csv("data/oral_cancer.csv")
 kable(oral_cancer, caption = 'Oral Cancer')
 ```
 

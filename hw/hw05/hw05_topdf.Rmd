@@ -18,7 +18,7 @@ library(readr)
 library(knitr)
 library(epitools)
 library(foreign)
-oral_cancer <- read_csv("data/hw05_data.csv")
+oral_cancer <- read_csv("data/oral_cancer.csv")
 kable(oral_cancer, caption = 'Oral Cancer')
 ```
 
@@ -46,7 +46,7 @@ kable(oral_cancer, caption = 'Oral Cancer')
 (h) Construct a 90% confidence interval for the odds ratio using the small-sample adjustment presented in class. Compare the results to those obtained above and comment.
 \newpage
 
-(i) Obtain an exact 90% confidence interval for the odds ratio and comment. *Hint: Use the `epitab()` command in base R to help you with the calculation. You will need to use the "fisher" argument to calculate an exact confidence since `epitab()` uses a normal (Wald) approximation by default.*
+(i) Obtain an exact 90% confidence interval for the odds ratio and comment. Hint: Use the `epitab()` command in base R to help you with the calculation. You will need to use the "fisher" argument to calculate an exact confidence since `epitab()` uses a normal (Wald) approximation by default.
 \vspace{180pt}
 
 ```{r}
@@ -78,7 +78,7 @@ kable(oral_cancer, caption = 'Oral Cancer')
 
 ```
 
-(d) Also examine the relationship between the risk for esophageal cancer and the dichotomized measure of alcohol consumption using the $\chi^2$ test in R. Compare your conclusions to those based on the confidence intervals computed in (b) and (c). The following R commands may be useful for this: `chisq.test()`, `pchisq()`. *Remember to use turn off Yate's correction for the $\chi^2$ test and set `lower.tail = FALSE` for `pchisq()`.*
+(d) Also examine the relationship between the risk for esophageal cancer and the dichotomized measure of alcohol consumption using the $\chi^2$ test in R. Compare your conclusions to those based on the confidence intervals computed in (b) and (c). The following R commands may be useful for this: `chisq.test()`, `pchisq()`. Hint: turn off Yate's correction for the $\chi^2$ test and set `lower.tail = FALSE` for `pchisq()`.
 ```{r}
 
 ```

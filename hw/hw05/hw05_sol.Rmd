@@ -1,8 +1,7 @@
 ---
-title: "Homework 5"
+title: "Homework 5 Solutions"
 subtitle: "Public Health 241: Statistical Analysis of Categorical Data"
-author: "YOUR NAME / YOUR STUDENT ID HERE"
-date: "TODAY'S DATE"
+date: "Spring 2019"
 output: pdf_document
 ---
 
@@ -18,32 +17,58 @@ library(readr)
 library(knitr)
 library(epitools)
 library(foreign)
-oral_cancer <- read_csv("data/hw05_data.csv")
+oral_cancer <- read_csv("data/oral_cancer.csv")
 kable(oral_cancer, caption = 'Oral Cancer')
 ```
 
 (a) Calculate a point estimate for the odds ratio of oral cancer associated with having been employed in the textile industry for 10 or more years.
+$$ \widehat{OR} = \frac{16\times32}{8\times24} = 2.667 $$ 
 
 (b) Calculate an estimate of the variance of the log of your point estimate from (a).
+$$ \widehat{var}(\widehat{OR})= \frac{1}{16} + \frac{1}{8} + \frac{1}{24} + \frac{1}{32} =0.2604 $$
+(c) Construct an approximate 90% confidence interval for the log odds ratio of oral cancer associated with having been employed in the  textile industry for 10 or more years. Hint: Use the base R function `qnorm()` to compute the correct $z$-value.
+\vspace{10pt}
+```{r}
+qnorm(.95)
+```
 
-(c) Construct an approximate 90% confidence interval for the log odds ratio of oral cancer associated with having been employed in the  textile industry for 10 or more years. Hint: Use the base R function `qnorm()` to compute the correct _z_-value
+$$ \log(2.667) \pm 1.645\sqrt{0.2604} = (0.141, 1.820) $$
 
 (d) Construct an approximate 90% confidence interval for the odds ratio of oral cancer associated with having been employed in the textile industry for 10 or more years.
+$$ (e^{0.141}, \space e^{1.820}) = (1.15, 6.17) $$
 
-(e) Does the confidence interval provide evidence against the null hypothesis that employment history in the textile industry and the risk for oral cancer are independent of each other in the target population?
+(e) Does the confidence interval provide evidence against the null hypothesis that employment history in the textile industry and the risk for oral cancer are independent of each other in the target population?  
+
+\vspace{12pt}
+\begin{itemize}
+  \item[] Since the confidence interval does not include the null value 1, the data provide evidence (at a 10\% significance level) for an association between employment history and the risk for oral cancer.  
+\end{itemize}
+\vspace{12pt}
 
 (f) Carry out the $\chi^2$ test of independence. At a significance level of 10%, does the test accept or reject the null hypothesis of independence between employment history and the risk for oral cancer? Do these results agree with those based on the confidence interval calculation?
+$$ \chi^2 = \frac{80(16\times32-8\times24)^2}{40\times40\times24\times56} =3.81 \hspace{4mm}(p=0.051) $$
+The $\chi^2$ test rejects the null hypothesis of independence at a 10% significance level (but would accept the null hypothesis at the 5% significance level). As is to be expected, this agrees with the confidence interval we calculated.
 
 (g) Compute a point estimate for the odds ratio using the small-sample adjustment for obtaining a direct odds ratio estimate (rather than a point estimate on the log scale). Compare your point estimate to the one obtained in (a) and comment.
+$$ OR_{SS} = \frac{16\times32}{9\times25} =2.28 $$
+The regular point estimate differs from the small-sample adjusted point estimate by about 17%. This is a considerable discrepancy so that the approximations used in the original confidence interval calculation may be somewhat suspect and exact confidence interval may be preferable.
 
 (h) Construct a 90% confidence interval for the odds ratio using the small-sample adjustment presented in class. Compare the results to those obtained above and comment.
+$$(\log\widehat{OR})_{SS} = \log\frac{16.5\times32.5}{8.5\times24.5} = 0.946$$
+$$ \widehat{var}(\log\widehat{OR})_{SS}= \frac{1}{16.5} + \frac{1}{8.5} + \frac{1}{24.5} + \frac{1}{32.5} = 0.250 $$
+$$ 90\% \space CI \space\space \textrm{for} \space \log(OR) = 0.946 \pm 1.645 \times \sqrt{0.250} = (0.124, 1.768) $$
+$$ 90\% \space CI \space\space \textrm{for} \space OR = (e^{0.124},\space e^{1.768}) = (1.13, 5.86) $$
+The upper limit of the approximate confidence interval differs from the upper limit of the small- sample confidence interval by about 5%. This is not a huge difference, but again we may be worried that the approximations used in the original confidence interval calculation may be somewhat suspect so that exact confidence interval may be preferable.
 
 (i) Obtain an exact 90% confidence interval for the odds ratio and comment. *Hint: Use the `epitab()` command in base R to help you with the calculation. You will need to use the "fisher" argument to calculate an exact confidence since `epitab()` uses a normal (Wald) approximation by default.*
 
 ```{r}
 epitab(c(16, 24, 8, 32), conf.level = 0.90, oddsratio = "fisher")
 ```
-The exact confidence interval (1.03, 7.04) is substantially wider than the approximate confidence intervals calculated above, even if small-sample adjustments are used. The normal approximation that forms the basis for those approximate confidence intervals may not be appropriate.
+\begin{itemize}
+  \item[] The exact confidence interval (1.03, 7.04) is substantially wider than the approximate confidence intervals calculated above, even if small-sample adjustments are used. The normal approximation that forms the basis for those approximate confidence intervals may not be appropriate. 
+\end{itemize}
+
 
 2. Tuyns et al. (1977) carried out a case-control study of esophageal cancer in Ille-et-Vilaine in Brittany, France. The data set, _oesoph_ is available on the bCourses website. One risk factor of interest was daily alcohol consumption, measured in grams per day, given in the data set in four levels: 0 to 39 `(alcgp=0)`, 40 to 79 `(alcgp=1)`, 80 to 120 `(alcgp=2)`, and > 120 g/day `(alcgp=3)`.
 
@@ -70,15 +95,20 @@ epitab(alc.by.case)
 
 ```{r}
 epitab(alc.by.case, oddsratio = "fisher")
-epi.2by2(alc.by.case)
 ```
-The end points of the approximate confidence interval are less than 2% off from those of the exact confidence interval. The sample sizes of cases and controls appear large enough to justify the normal approximation.
+\begin{itemize}
+  \item[] The end points of the approximate confidence interval are less than 2\% off from those of the exact confidence interval. The sample sizes of cases and controls appear large enough to justify the normal approximation.
+\end{itemize}
+
 
 (d) Also examine the relationship between the risk for esophageal cancer and the dichotomized measure of alcohol consumption using the $\chi^2$ test in R. Compare your conclusions to those based on the confidence intervals computed in (b) and (c). The following R commands may be useful for this: `chisq.test()`, `pchisq()`. *Remember to use turn off Yate's correction for the $\chi^2$ test and set `lower.tail = FALSE` for `pchisq()`.*
 ```{r}
 chisq.test(alc.by.case, correct = FALSE)
 pchisq(110.26, df = 1, lower.tail = FALSE) 
 ```
-Like the confidence interval, the $\chi^2$ test provides strong evidence against the null hypothesis that alcohol consumption is independent of the risk of esophageal cancer.
+\begin{itemize}
+  \item[] Like the confidence interval, the $\chi^2$ test provides strong evidence against the null hypothesis that alcohol consumption is independent of the risk of esophageal cancer.
+\end{itemize}
+
 
 
