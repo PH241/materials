@@ -19,9 +19,9 @@ In this lab, we'll cover tools you'll need to complete Homework 5, including:
 
 * Hypothesis testing
 * Confidence intervals
-* Obtaining critical values and p-values from Gaussian and $\chi^{2}$
+* Obtaining critical values and p-values from Gaussian and $\chi^2$
 
-# 1 Hypothesis tests, confidence intervals, and $\chi^{2}$
+# 1 Hypothesis tests, confidence intervals, and $\chi^2$
 We’ll be using the WCGS dataset, as in lab Load it into R. In this dataset, each person in the study is represented by a row. Each row contains, among other variables, the values of two binary (0/1 indicator) variables called chd69 (Coronary Heart Disease) and arcus0 (Arcus senilis, a ring in the corneal margin or around the iris that can indicate CHD).
 
 ## 1.1 The Normal approximation for proportions, exact confidence intervals, and Fisher’s exact test
