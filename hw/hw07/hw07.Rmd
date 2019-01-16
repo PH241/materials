@@ -20,8 +20,17 @@ library(foreign)
 ```
 
 1. The data set `diet.dta` on bCourses contains three variables: `act` measures physical activity (`act`=0,1,2,3), with higher values corresponding to higher activity levels; `diet` is an indicator variable for a low-fat diet (1 = low-fat diet, 0 = other diet); `mort` is an indicator variable for death by the end of the study (1= dead, 0 = alive). We are interested in studying the effect of low-fat diet on all-cause mortality, but are concerned that the relationship might be confounded by physical activity. The table below summarizes the available data. In questions (a)-(i) calculate by hand; in question (j) check your results in R and show your output.
-![img](data/actvmort.png) 
 
+``` {r table_1, echo=FALSE}
+activity_0 <- data.frame("Diet"=c("Low-fat Diet", "Other Diet"),  "Dead"=c(17,75), "Alive"=c(22,75))
+activity_1 <- data.frame("Diet"=c("Low-fat Diet", "Other Diet"),  "Dead"=c(28,40), "Alive"=c(36,45))
+activity_2 <- data.frame("Diet"=c("Low-fat Diet", "Other Diet"),  "Dead"=c(10,14), "Alive"=c(37,34))
+activity_3 <- data.frame("Diet"=c("Low-fat Diet", "Other Diet"),  "Dead"=c(4,7), "Alive"=c(24,32))
+kable(activity_0, caption="Activity Level 0")
+kable(activity_1, caption="Activity Level 1")
+kable(activity_2, caption="Activity Level 2")
+kable(activity_3, caption="Activity Level 3")
+```
 
 (a) Set up a pooled 2 × 2 table and calculate a point estimate and confidence interval for the crude odds ratio for the risk of mortality comparing low-fat diet to other diets.
 \newpage
