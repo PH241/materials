@@ -1,0 +1,49 @@
+---
+title: "Lab 7"
+subtitle: "Public Health 241: Statistical Analysis of Categorical Data"
+
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(dplyr)
+library(foreign)
+library(epitools)
+library(epiR)
+library(ORCI)
+library(knitr)
+library(vcd)
+library(DescTools)
+wcgs <- read.dta("data/wcgs.dta")
+```
+
+In this (very) brief lab, we’ll cover tools you’ll need to complete Homework 8. This includes two methods of testing for multiplicative interaction.
+
+
+# 1 Stratified Analyses
+Today, we’ll again be using the Western Collaborative Group Study data. You can find it on bCourses if you don't already have it.
+
+1. Load the WCGS data set and generate the wtcat variable (as we did last time):
+```{r}
+wcgs <- wcgs %>% mutate(wtcat = ifelse(weight0 <= 150, 0, 
+                        ifelse(weight0 > 150 & weight0 <= 160, 1,
+                        ifelse(weight0 > 160 & weight0 <= 170, 2,
+                        ifelse(weight0 > 170 & weight0 <= 180, 3, 4)))))
+```
+
+Note that the categories are slightly modified to better follow the book and lecture
+notes.
+
+2. The Woolf test of homogeneity can be done with the `woolf_test()` function from the `vcd` package:
+```{r}
+woolf_test(table(wcgs$chd69, wcgs$dibpat0, wcgs$wtcat))
+```
+
+3. The Breslow-Day test of homogeneity can be done with the `BreslowDayTest()` function from the `DescTools` package.
+```{r}
+BreslowDayTest(table(wcgs$chd69, wcgs$dibpat0, wcgs$wtcat))
+```
+
+In both cases $p > 0.05$, so we fail to reject the $H_{0}$ that the $OR$ are the same. This suggests there is little evidence for multiplicative interaction.
