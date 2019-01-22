@@ -1,0 +1,102 @@
+---
+title: "Lab 8"
+subtitle: "Public Health 241: Statistical Analysis of Categorical Data"
+
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(dplyr)
+library(foreign)
+library(epitools)
+library(epiR)
+library(ORCI)
+library(knitr)
+library(vcd)
+library(DescTools)
+
+```
+
+In this lab, we’ll cover some commands you’ll need to complete Homework 9 and introduce you to some commonly used R commands and concepts not mentioned previously. We’ll also use this opportunity to expose you to some more advanced R features that are beyond the requirements of this course’s assignments.
+
+
+# 1 Tests for Trend
+Today, we’ll begin by using the Western Collaborative Group Study data. Open the WCGS data set from the class website, and again generate the `wtcat` variable:
+
+```{r}
+wcgs <- read.dta("data/wcgs.dta")
+wcgs <- wcgs %>% mutate(wtcat = ifelse(weight0 <= 150, 0, 
+                        ifelse(weight0 > 150 & weight0 <= 160, 1,
+                        ifelse(weight0 > 160 & weight0 <= 170, 2,
+                        ifelse(weight0 > 170 & weight0 <= 180, 3, 4)))))
+```
+We’ve been relying heavily on `table()` and `epitab()` so far for data that is easily summarized into a 2 x 2 table. However, these functions can also be used for 2 x $k$ tables. To produce tables and statistics from such data structures, we’ll need to use the tabulate and tabodds commands. First, create the 2 x $k$ table using `table()`. You can then use `chisq.test()` to get the overall test of association.
+```{r}
+chd_wtcat <- table(wcgs$chd69, wcgs$wtcat)
+chd_wtcat
+
+chisq.test(chd_wtcat)
+```
+You can use `prop.trend.test()` to perform a test for trend. This function require two parameters: a vector of events and a vector of trials. We can do this by subsetting our 2 x $k$ table. To get the vector of positive `chd69`, subset the table by `c(TRUE, FALSE)`. This works by selecting every other element as R simply repeats the subset parameter if the parameter vector length is less than the object vector length. Thus, this expression is a shortcut that expands to `[c(TRUE, FALSE, TRUE, FALSE, TRUE)]` for a object vector of length 5. Then, to get the vector of negative `chd69`, subset the table by `c(FALSE, TRUE)`. To get the total number of events, we add `chd_pos` and `chd_neg`.
+```{r}
+chd_pos <- table(wcgs$chd69, wcgs$wtcat)[c(FALSE, TRUE)]
+chd_neg <- table(wcgs$chd69, wcgs$wtcat)[c(TRUE, FALSE)]
+chd_tot <- chd_neg + chd_pos
+
+prop.trend.test(chd_pos, chd_tot) # test for trend
+```
+The goodness of fit test statistic and p-value can easily be deduced by subtraction and `pchisq()`:
+```{r}
+goodness_of_fit <- 21.35 - 15.36 
+goodness_of_fit
+
+pchisq(goodness_of_fit, df = 3, lower.tail = FALSE)
+```
+
+It is a very good idea to plot the estimated odds (or perhaps, even better, the log odds) here against the values of wtcat to see the pattern of the growth in risk. The next section will show you how to do this.
+
+This approach can also be used for case-control data although the actual values of the odds here are not immediately interpretable due to the over-sampling of cases. However, the pattern in the log odds plot mentioned above is still meaningful and this is a good plot to examine in this case.
+
+# 2 Additional Basic Commands and Concepts
+
+## 2.1 Graphs and Charts
+
+### 2.1.1 Scatter Plots
+To graph 2 variables that exist in your dataset (let’s call them x_var and y_var), simply use the `plot()` function with base parameters `x_var` and `y_var`. The first parameter will be plotted on the x-axis and the second on the y-axis as follows:
+```{r, eval=FALSE, echo=TRUE}
+plot(x_var, y_var)
+```
+To make a better graph, this function also takes parameters for x- and y-axis labels, as well as a title for the graph as follows. If labels are not specified, R takes the name of the parameters as the default axis labels.
+```{r, eval=FALSE, echo=TRUE}
+plot(x_var, y_var, xlab = "x-axis label", ylab = "y-axis label", main = "Scatterplot of x vs. y")
+```
+To plot the WCGS `wtcat` variable against the log odds of CHD, mentioned above, we’ll
+first need to calculate the following probabilities:
+$$ P(\text{chd69} = 1|\text{wtcat} = k)\space\space \text{for each}\space k \space\text{where}\space k \space\text{is an integer from 0 to 4} $$
+In other words, we need the conditional probability of being a case within each exposure level. To do this, we simply divide the number of events by number of trials for each strata. Using our `chd_pos` and `chd_tot` objects from earlier:
+```{r}
+p <- chd_pos/chd_tot
+p
+```
+Be sure that you can see the connection between this new dataset and your summary table above table(wcgs\$chd69, wcgs\$wtcat).
+
+Now, we can create variables representing the odds and log odds:
+```{r}
+odds <- p/(1-p)
+odds
+
+log_odds <- log(odds)
+log_odds
+```
+Finally, let’s create the two graphs mentioned in the last section.
+```{r}
+plot(chd_tot, odds)
+
+plot(chd_tot, logodds)
+```
+
+
+For more features of `plot()`, type `?plot` into R or view the documentation [here](https://www.datamentor.io/r-programming/plot-function/)
+
