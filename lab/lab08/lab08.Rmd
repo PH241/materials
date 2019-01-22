@@ -93,10 +93,66 @@ log_odds
 Finally, let’s create the two graphs mentioned in the last section.
 ```{r}
 plot(chd_tot, odds)
+```
+```{r}
+plot(chd_tot, log_odds, xlab = "Cases of CHD", ylab = "log odds", main = "Log Odds of CHD")
+```
+For more features of `plot()` like colors, lines, labels, etc., type `?plot` into R or view the documentation [here](https://www.datamentor.io/r-programming/plot-function/)
 
-plot(chd_tot, logodds)
+GG PLOT VERSION
+```{r}
+chd_odds <- cbind.data.frame(chd_tot, odds)
+plotodds <- ggplot(chd_odds, aes(chd_tot, odds))
+plotodds + geom_point()
 ```
 
 
-For more features of `plot()`, type `?plot` into R or view the documentation [here](https://www.datamentor.io/r-programming/plot-function/)
+### 2.1.2 Saving and Exporting Plots
+To save your plot for use outside of your markdown file, you can use `ggsave()` for ggplots and other grid objects. The first argument to `ggsave()` is the desired file name, given as a file path relative to your current working directory; you can also specify the file type to be exported by the extension provided here (.pdf, .png, etc.). By default, `ggsave()` will save your most recently generated plot, but if this is not what you desire, you can specify the object to be saved with the `plot` parameter. To find out more about customizing the size of the plot, resolution, scale, etc., check the documentation [here.](https://ggplot2.tidyverse.org/reference/ggsave.html)
+```{r, eval = FALSE, echo = TRUE}
+ggsave("chd_logodds.png")
+ggsave("chd_odds.pdf", plot = plot_logodds)
+```
+
+### 2.1.3 Other Types of Graphs and Charts
+If you wish to make other types of graphs and charts, you can do so by customizing your ggplot by adding additional functions. For example, for a histogram, you can append your ggplot with `geom_hist()`. This [site](http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html) lists the top 50 common ggplot visualizations including jitter plots, bubble plots, violin plots, etc.
+
+## 3 Other Cool Tricks and Tips
+
+### 3.1 Filtering Data
+From this section of the lab forward, we’ll be using the `animals2.dta` dataset, available on bCourses. This dataset is a little silly and contrived, but we’ll be using it to demonstrate ways in which you can manipulate data in R. 
+To limit the observations on which you perform calculations, you can first take a subset of your data using the `subset()` function. For example, to tabulate bunnies and cats across homes with a happiness level above 5 and at least 1 dog:
+```{r}
+animals <- read.dta("data/animals2.dta")
+homes_happy_dogs <- subset(animals, happiness > 5 & dogs != 0, select = c(bunnies, cats))
+table(homes_happy_dogs$bunnies, homes_happy_dogs$cats)
+```
+Or if you only want to tabulate bunnies and cats across the first 5 observations, you can use the bracket operator to subset your data:
+```{r}
+first_five <- animals[1:5,]
+table(first_five$bunnies, first_five$cats)
+```
+
+## 3.2 Merging and Appending Data
+You can merge existing datasets using joins. There are four options for joins: `left_join()`, `right_join()`, `inner_join()`, and `outer_join()`. Each option will give you a different result based on what variables you want to keep in your output if there happens to be an observation in data set A in which there is no observation with a matching key in data set B. Details [here.](https://r4ds.had.co.nz/relational-data.html#mutating-joins).
+
+If you want to append observations to an existing data set, you can use `rbind()` (short for row-bind), which takes two data frames as arguments. This appends the second data set to the end of the first data set. `rbind()` only works if the column names all match.
+
+If you want to add additional variables of which you already have values for, you can use `cbind()` (short for column-bind). This requires the variable-to-be-appended to have the same number of observations as the existing data set.
+
+## 3.3 Data Types 
+Stata stores data values as either strings or numbers. There are different ways to store strings and different ways to store numbers. The describe command tells you the storage type for each variable in your dataset. You should know that numbers are designated by the following data types: byte, int, long, float, double. Strings are designated by these data types: str1, str2, ..., str80. The number after str indicates the maximum number of characters in the string.
+The reason this information is relevant to even beginning Stata users is because anytime you want to refer to the value of a string variable, you will need to include quotation marks, whereas when you want to refer to the value of a numeric variable, you should not include quotation marks. For example:
+
+Everything in R is an object. Fundamentally, these objects are broken down into _6 atomic types_: character, numeric (real or decimal), integer, logical, complex. From these atomic types, we can create atomic vectors, or vectors that hold only 1 type. To check what type of object we are working with, use `typeof()`. For example:
+```{r}
+x <- "This is a vector of character objects."
+typeof(x)
+```
+When we combine many atomic data into one object (whether the data is one type or of different types), we call these _data structures_. There are many base data structures in R including atomic vectors, lists, matrices, data frames, factors. Data structures can also be user- and package-defined. Many times, errors in R will have to do with type mismatch and will require type conversion to resolve. To do so, there are functions that support conversion of atomic types to other atomic types. More details [here](https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures/). For example:
+```{r, eval = FALSE, echo = TRUE}
+two <- "2"
+three <- two + 1 # error in two + 1 : non-numeric argument to binary operator
+three <- as.numeric(two) + 1 # no error
+```
 
