@@ -24,35 +24,35 @@ In this lab, we’ll cover tools you’ll need to complete Homework 7 (concepts 
 
 Today, we'll again be using the Western Collaborative Group Study data.
 
-1. Load the WCGS dataset into R.
+### 1.1: Load the WCGS dataset into R.
 
 ``` {r one}
 wcgs <- read.dta("data/wcgs.dta")
 ```
 
-2. Familiarize yourself with the variables in your dataset. A Word document containing a description of the study and all the variables in the dataset is available on bCourses.
+### 1.2: Familiarize yourself with the variables in your dataset. A Word document containing a description of the study and all the variables in the dataset is available on bCourses.
 
-Note: The inspect command is useful for data exploration in a different way than we’ve seen with other commands. On the left side of the Results window, inspect draws a crude histogram of the distribution of the variable. Also, it can give you clues about problems in your data; for instance, if there were negative or missing values for a variable that should only be positive, inspect could identify this problem. Missing values are particularly important when generating new variables from pre-existing variables, since (as pointed out in past labs) a missing value will be treated as $+\infty$ in an inequality (for instance, in a replace command). This is often not the behavior desired, and so it is a good idea in that situation to check for missing values in your variable. Another way to check for missing values:
+We have loaded our dataset into a variable called `wcgs`, which is saved as a dataframe. Let's take a look at one of the variables in the dataset: `Ncigs`, which is the number of cigarettes smoked in the study. We'll explore using a few important statistical functions to find the distribution of the variable, as well as finding any missing values in the data.
 
 ``` {r two.one}
-
+summary(wcgs)
 ```
 
-The above command only reports on variables for which there are more than 0 missing values. (? does this have an R equivalent?)
+We now have a non-parametric summary of the data we have acquired. While most things are unimportant to us now, we want to make sure that we catch any instances of `NAs`. If this shows up anywhere in the summary, we have found `NaNs` in our dataset. Missing values are particularly important when generating new variables from pre-existing variables, since (as pointed out in past labs), a missing value will be treated as $+\infty$ in an inequality. This is not the behavior desired, and so it is a good idea in that situation to check for missing values in your variables.
 
-Label your data and variables using information from the description Word document linked to above.
+There are two variables with missing values in `wcgs`: `chol0` and `arcus0`. When doing kind of analysis or experiments, it is generally good practice to address these missing values. This can be dropping rows with missing values (`wcgs[-c(ROW IDX TO DROP)]`) or imputation (replacing with mean of the variable), which are the two most popular methods.
 
-``` {r two.two}
-
-```
-
-3. Look at the distribution of the `weight0` variable in particular.
+### 1.3: Look at the distribution of the `weight0` variable in particular.
 
 ``` {r three}
-
+w <- wcgs$weight0
+summary(w)
+hist(w, prob=TRUE, xlim=c(min(w), max(w)))
 ```
 
-4. Weight is a suspected confounder in the relationship between two variables of interest, Behavior Pattern and Coronary Heart Disease. Generate a categorical variable for weight and divide the continuous weight variable into the following categories:
+The distribution for this variable looks roughly normal. We decide that weight is a possible confounding variable in determining the probability of a person having coronary heart disease (`chd69 == 1`) or not (`chd69 == 0`). To determine a range that would be statistically significant, we will turn the `weight0` column into a categorical variable.
+
+### 1.4 Weight is a suspected confounder in the relationship between two variables of interest, Behavior Pattern and Coronary Heart Disease. Generate a categorical variable for weight and divide the continuous weight variable into the following categories:
 
 * $< 150$ lbs
 * $\geq 150$ lbs and $< 160$ lbs
@@ -60,41 +60,67 @@ Label your data and variables using information from the description Word docume
 * $\geq 170$ lbs and $< 180$ lbs
 * $\geq 180$ lbs
 
-``` {r four}
+The best solution to do this is to use base R's function `cut()` and label these into a new column in our dataframe. An example is shown below.
 
+``` {r four}
+wcgs$weight.cats<-cut(wcgs$weight0, c(0, 150, 160, 170, 180, max(wcgs$weight0) + 1) , right=FALSE, labels=c(1:5))
+summary(wcgs)
 ```
 
-5. Examine the odds ratio for coronary heart disease associated with behavior pattern. Take a look at the relative risk.
+* We passed in the relevant column `wcgs$weight0`
+* Specified a vector of values for the limit points `c(0, 150, 160, 170, 180, max(wcgs$weight0) + 1)`. The +1 is there because we need to include the max value, and because we are looking at the left inclusive ranges (`right=FALSE`). 
+* Finally, labels specify the value associated to that range `labels=c(1:5)`
+
+### 1.5 Examine the odds ratio for coronary heart disease associated with behavior pattern. Take a look at the relative risk.
 
 ``` {r five}
+chd.dibpat <- sum(wcgs$chd69 & wcgs$dibpat0)
+chd.no.dibpat <- sum(wcgs$chd69 & !wcgs$dibpat0)
+no.chd.dibpat <- sum(!wcgs$chd69 & wcgs$dibpat0)
+no.chd.no.dibpat <- sum(!wcgs$chd69 & !wcgs$dibpat0)
 
+matr <- matrix(c(chd.dibpat, no.chd.dibpat, chd.no.dibpat, no.chd.no.dibpat), ncol=2)
+tabl <- as.table(matr)
+epi.2by2(tabl)
 ```
 
-6. We can now examine the odds ratio and relative risk for coronary heart disease and behavior pattern for each of the weight categories defined above using the by option, for Relative Risk:
+This is an exercise we've now done many times! What we're more interested in seeing is whether this number for relative risk changes for different weight categories.
+
+
+### 1.6: We can now examine the odds ratio and relative risk for coronary heart disease and behavior pattern for each of the weight categories defined above using the by option, for Relative Risk:
 
 ``` {r six.one}
-
+for (i in 1:5) {
+  temp <- wcgs[wcgs$weight.cats == i,]
+  chd.dibpat <- sum(temp$chd69 & temp$dibpat0)
+  chd.no.dibpat <- sum(temp$chd69 & !temp$dibpat0)
+  no.chd.dibpat <- sum(!temp$chd69 & temp$dibpat0)
+  no.chd.no.dibpat <- sum(!temp$chd69 & !temp$dibpat0)
+  
+  matr <- matrix(c(chd.dibpat, no.chd.dibpat, chd.no.dibpat, no.chd.no.dibpat), ncol=2)
+  tabl <- as.table(matr)
+  print(epi.2by2(tabl))
+}
 ```
 
-and for Odds Ratio:
+By adding one more option to the `epi.2by2()` function, we can tell R to use the Woolf method for calculating weights, rather than the default Mantel-Haenszel method:
 
 ``` {r six.two}
+chd.dibpat <- sum(wcgs$chd69 & wcgs$dibpat0)
+chd.no.dibpat <- sum(wcgs$chd69 & !wcgs$dibpat0)
+no.chd.dibpat <- sum(!wcgs$chd69 & wcgs$dibpat0)
+no.chd.no.dibpat <- sum(!wcgs$chd69 & !wcgs$dibpat0)
 
-```
-
-By adding one more option to the `` function, we can tell R to use the Woolf method for calculating weights, rather than the default Mantel-Haenszel method:
-
-``` {r six.three}
-
+matr <- matrix(c(chd.dibpat, no.chd.dibpat, chd.no.dibpat, no.chd.no.dibpat), ncol=2)
+tabl <- as.table(matr)
+epi.2by2(tabl, homogeneity ="woolf") # Woolf!
 ```
 
 7. What do these estimates tell you qualitatively about interaction and confounding? How can you use the Mantel-Haenszel to sum up your opinions about confounding? Make sure that you can interpret the results of this test. Compare the CMH test statistic with the overall $\chi^2$ test statistic from the unstratified analysis.
 
-Some notes:
+One Last Note:
 
-* You cannot get the Cochran-Mantel-Haenszel test results without using the ____.??????
-
-* Since this lab focuses on odds ratios, which can be calculated using the same equations for cohort, population-based, and case-control studies, _you may use either the cs or the cc command ______ regardless of your study design. The output should be identical.
+* Since this lab focuses on odds ratios, which can be calculated using the same equations for cohort, population-based, and case-control studies, you may use either `cohort.count` or `case.control`, regardless of your study design. The output should be identical.
 
 \newpage
 
