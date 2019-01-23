@@ -37,10 +37,10 @@ kable(activity_3, caption="Activity Level 3")
 diet <- data.frame("Diet"=c("Low-fat diet", "Other diet"), "Dead"=c(59, 136), "Alive"=c(119, 186))
 kable(diet, caption="Mortality")
 ```
-$$\hat{OR} = \frac{59 \times 186}{119 \times 136} = 0.6781$$
-$$\hat{var}\big(\log{(\hat{OR})}\big) = \frac{1}{59} + \frac{1}{136} + frac{1}{119} + \frac{1}{186} = 0.03808$$
-$$\text{95% CI for } \log{(OR)} = \log{0.6781} \pm 1.96\sqrt{0.03808} = (-0.771, -0.006)$$
-$$\text{95% CI for } OR = (\exp(-0.771), \exp(-0.006)) = (0.46, 0.99)$$
+$$\widehat{OR} = \frac{59 \times 186}{119 \times 136} = 0.6781 $$
+$$ \widehat{var}\big(\log{(\widehat{OR})}\big) = \frac{1}{59} + \frac{1}{136} + \frac{1}{119} + \frac{1}{186} = 0.03808 $$
+$$ \text{95% CI for } \log{(OR)} = \log{0.6781} \pm 1.96\sqrt{0.03808} = (-0.771, -0.006) $$
+$$ \text{95% CI for } OR = (\exp(-0.771), \exp(-0.006)) = (0.46, 0.99) $$
 
 (b) Draw a causal graph to reflect the relationship between low-fat diet, physical activity, and mortality. Based on your graph, is the crude odds ratio you calculated in (a) likely to be a good estimate of the causal odds ratio comparing low-fat diet to other diets?
 
@@ -51,10 +51,10 @@ knitr::include_graphics("data/dag.png")
 ```
 
 (c) For each of the four strata of physical activity, calculate a point estimate for the odds ratio comparing low-fat diet to other diets.
-$$\hat{OR}_0  = \frac{17 \times 75}{75 \times 22} = 0.77$$
-$$\hat{OR}_1  = \frac{28 \times 45}{40 \times 36} = 0.88$$
-$$\hat{OR}_2  = \frac{10 \times 34}{14 \times 37} = 0.66$$
-$$\hat{OR}_3  = \frac{4 \times 32}{7 \times 24} = 0.76$$
+$$\widehat{OR}_0  = \frac{17 \times 75}{75 \times 22} = 0.77$$
+$$\widehat{OR}_1  = \frac{28 \times 45}{40 \times 36} = 0.88$$
+$$\widehat{OR}_2  = \frac{10 \times 34}{14 \times 37} = 0.66$$
+$$\widehat{OR}_3  = \frac{4 \times 32}{7 \times 24} = 0.76$$
 
 (d) Based on your results in (c), does it seem plausible that the effect of low-fat diet on mortality (as measured on the odds ratio scale) is the same in all four groups of physical activity?
 
@@ -87,7 +87,7 @@ Here is a table summarizing the information we need:
 point_estimate_table <- data.frame("Activity Level"=c(0,1,2,3), "ad/n"=c(6.746, 8.456, 3.579, 1.910), "bc/n" = c(8.730, 9.664, 5.453, 2.507))
 kable(point_estimate_table)
 ```
-$$\hat{OR}_{MH} = \frac{20.691}{26.354} = 0.79$$
+$$\widehat{OR}_{MH} = \frac{20.691}{26.354} = 0.79$$
 
 (h) Calculate a Woolf estimate and corresponding 95% confidence interval for the summary odds ratio.
 \vspace{200pt}
@@ -98,9 +98,9 @@ Here is a table summarizing the information we need:
 woolf <- data.frame("Activity Level"=c(0,1,2,3), "log or"=c(-0.251, -0.131, -0.406, -0.228), "bc/n" = c(7.801, 9.161, 4.548, 2.341))
 kable(woolf)
 ```
-$$\log{\hat{OR}_W} = \frac{(-0.251) \times 7.801 + ... + (-0.228) \times 2.341}{23.859} = -0.232$$
-$$hat{OR}_W = \exp{(-0.232)} = 0.793$$
-$$\hat{var}\Big(\log{(\hat{OR}_W)} \Big) = \frac{1}{23.859} = 0.0419$$
+$$\log{\widehat{OR}_W} = \frac{(-0.251) \times 7.801 + ... + (-0.228) \times 2.341}{23.859} = -0.232$$
+$$\widehat{OR}_W = \exp{(-0.232)} = 0.793$$
+$$\widehat{var}\Big(\log{(\widehat{OR}_W)} \Big) = \frac{1}{23.859} = 0.0419$$
 $$\text{95% CI for log(OR)} = -0.232 \pm 1.96 \sqrt{0.0419} = (-0.633, 0.169)$$
 $$\text{95% CI for OR} = (0.53, 1.18)$$
 

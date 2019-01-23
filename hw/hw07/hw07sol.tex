@@ -228,16 +228,15 @@ Diet & Dead & Alive\tabularnewline
 \endhead
 Low-fat diet & 59 & 119\tabularnewline
 Other diet & 136 & 186\tabularnewline
-\$\$\hat{OR} = \f & rac\{59 & \times 186\}\{119 \times 136\} =
-0.6781\$\$\tabularnewline
-\$\$\hat{var}\big & (\textbackslash{}log\{( & \hat{OR})\}\big) =
-\frac{1}{59} + \frac{1}{136} + frac\{1\}\{119\} + \frac{1}{186} =
-0.03808\$\$\tabularnewline
-\$\$\textbackslash{}text\{95\% CI & for \} \ & log\{(OR)\} =
-\log{0.6781} \pm 1.96\sqrt{0.03808} = (-0.771,
--0.006)\$\$\tabularnewline
-\$\$\textbackslash{}text\{95\% CI & for \} O & R = (\exp(-0.771),
-\exp(-0.006)) = (0.46, 0.99)\$\$\tabularnewline
+\$\$\widehat{OR}= & \textbackslash{}frac\{ & 59 \times 186\}\{119
+\times 136\} = 0.6781 \$\$\tabularnewline
+\$\$ \textbackslash{}widehat\{var & \}\big(\ &
+log\{(\widehat{OR})\}\big) = \frac{1}{59} + \frac{1}{136} +
+\frac{1}{119} + \frac{1}{186} = 0.03808 \$\$\tabularnewline
+\$\$ \textbackslash{}text\{95\% CI & for \} & \log{(OR)} = \log{0.6781}
+\pm 1.96\sqrt{0.03808} = (-0.771, -0.006) \$\$\tabularnewline
+\$\$ \textbackslash{}text\{95\% CI & for \} & OR = (\exp(-0.771),
+\exp(-0.006)) = (0.46, 0.99) \$\$\tabularnewline
 \bottomrule
 \end{longtable}
 
@@ -254,7 +253,7 @@ Other diet & 136 & 186\tabularnewline
 
 The DAG would probably look like this:
 
-\includegraphics[width=8.44in]{data/dag}
+\includegraphics{data/dag.png}
 
 \begin{enumerate}
 \def\labelenumi{(\alph{enumi})}
@@ -262,10 +261,10 @@ The DAG would probably look like this:
 \item
   For each of the four strata of physical activity, calculate a point
   estimate for the odds ratio comparing low-fat diet to other diets.
-  \[\hat{OR}_0  = \frac{17 \times 75}{75 \times 22} = 0.77\]
-  \[\hat{OR}_1  = \frac{28 \times 45}{40 \times 36} = 0.88\]
-  \[\hat{OR}_2  = \frac{10 \times 34}{14 \times 37} = 0.66\]
-  \[\hat{OR}_3  = \frac{4 \times 32}{7 \times 24} = 0.76\]
+  \[\widehat{OR}_0  = \frac{17 \times 75}{75 \times 22} = 0.77\]
+  \[\widehat{OR}_1  = \frac{28 \times 45}{40 \times 36} = 0.88\]
+  \[\widehat{OR}_2  = \frac{10 \times 34}{14 \times 37} = 0.66\]
+  \[\widehat{OR}_3  = \frac{4 \times 32}{7 \times 24} = 0.76\]
 \item
   Based on your results in (c), does it seem plausible that the effect
   of low-fat diet on mortality (as measured on the odds ratio scale) is
@@ -353,7 +352,7 @@ Activity.Level & ad.n & bc.n\tabularnewline
 1 & 8.456 & 9.664\tabularnewline
 2 & 3.579 & 5.453\tabularnewline
 3 & 1.910 & 2.507\tabularnewline
-\$\$\hat{OR}\_\{MH\} = & \textbackslash{}frac\{2 & 0.691\}\{26.354\} =
+\$\$\widehat{OR}\_\{M & H\} = \fr & ac\{20.691\}\{26.354\} =
 0.79\$\$\tabularnewline
 \bottomrule
 \end{longtable}
@@ -378,12 +377,13 @@ Activity.Level & log.or & bc.n\tabularnewline
 1 & -0.131 & 9.161\tabularnewline
 2 & -0.406 & 4.548\tabularnewline
 3 & -0.228 & 2.341\tabularnewline
-\$\$\textbackslash{}log\{\hat{OR}\_W & \} = \frac & \{(-0.251)
-\times 7.801 + \ldots{} + (-0.228) \times 2.341\}\{23.859\} =
--0.232\$\$\tabularnewline
-\$\$hat\{OR\}\_W = \ex & p\{(-0.232 & )\} = 0.793\$\$\tabularnewline
-\$\$\hat{var}\Big(\ & log\{(\hat & \{OR\}\_W)\} \Big) = \frac{1}{23.859}
-= 0.0419\$\$\tabularnewline
+\$\$\textbackslash{}log\{\textbackslash{}widehat\{O & R\}\_W\} = \ &
+frac\{(-0.251) \times 7.801 + \ldots{} + (-0.228)
+\times 2.341\}\{23.859\} = -0.232\$\$\tabularnewline
+\$\$\widehat{OR}\_W & = \textbackslash{}exp\{(- & 0.232)\} =
+0.793\$\$\tabularnewline
+\$\$\widehat{var}\B & ig(\textbackslash{}log\{( & \widehat{OR}\_W)\}
+\Big) = \frac{1}{23.859} = 0.0419\$\$\tabularnewline
 \$\$\textbackslash{}text\{95\% CI fo & r log(OR) & \} = -0.232 \pm 1.96
 \sqrt{0.0419} = (-0.633, 0.169)\$\$\tabularnewline
 \$\$\textbackslash{}text\{95\% CI fo & r OR\} = ( & 0.53,
