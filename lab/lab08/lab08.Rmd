@@ -16,14 +16,15 @@ library(ORCI)
 library(knitr)
 library(vcd)
 library(DescTools)
-
+library(ggplot2)
+library(stringr)
 ```
 
 In this lab, we’ll cover some commands you’ll need to complete Homework 9 and introduce you to some commonly used R commands and concepts not mentioned previously. We’ll also use this opportunity to expose you to some more advanced R features that are beyond the requirements of this course’s assignments.
 
 
 # 1 Tests for Trend
-Today, we’ll begin by using the Western Collaborative Group Study data. Open the WCGS data set from the class website, and again generate the `wtcat` variable:
+Today, we’ll begin by using the Western Collaborative Group Study data. Open the WCGS dataset from the class website, and again generate the `wtcat` variable:
 
 ```{r}
 wcgs <- read.dta("data/wcgs.dta")
@@ -64,14 +65,17 @@ This approach can also be used for case-control data although the actual values 
 ## 2.1 Graphs and Charts
 
 ### 2.1.1 Scatter Plots
-To graph 2 variables that exist in your dataset (let’s call them x_var and y_var), simply use the `plot()` function with base parameters `x_var` and `y_var`. The first parameter will be plotted on the x-axis and the second on the y-axis as follows:
+To graph 2 variables that exist in your dataset (let’s call them x_var and y_var), we will be using a package called `ggplot2`. To begin constructing a ggplot, first feed the data to `ggplot()` and specify the variables you are interested in. Then, add feature functions to the base ggplot to visualize different trends in that dataset. 
 ```{r, eval=FALSE, echo=TRUE}
-plot(x_var, y_var)
+p <- ggplot(data, aes(x_var, y_var))
+s <- p + geom_point()          # scatterplot
+
+p <- ggplot(data, aes(x_var))
+s <- p + geom_jitter()         # jitterplot
+h <- p + geom_histogram()      # histogram
+
 ```
-To make a better graph, this function also takes parameters for x- and y-axis labels, as well as a title for the graph as follows. If labels are not specified, R takes the name of the parameters as the default axis labels.
-```{r, eval=FALSE, echo=TRUE}
-plot(x_var, y_var, xlab = "x-axis label", ylab = "y-axis label", main = "Scatterplot of x vs. y")
-```
+
 To plot the WCGS `wtcat` variable against the log odds of CHD, mentioned above, we’ll
 first need to calculate the following probabilities:
 $$ P(\text{chd69} = 1|\text{wtcat} = k)\space\space \text{for each}\space k \space\text{where}\space k \space\text{is an integer from 0 to 4} $$
@@ -80,7 +84,7 @@ In other words, we need the conditional probability of being a case within each 
 p <- chd_pos/chd_tot
 p
 ```
-Be sure that you can see the connection between this new dataset and your summary table above table(wcgs\$chd69, wcgs\$wtcat).
+Be sure that you can see the connection between this new dataset and your summary table above.
 
 Now, we can create variables representing the odds and log odds:
 ```{r}
@@ -92,20 +96,17 @@ log_odds
 ```
 Finally, let’s create the two graphs mentioned in the last section.
 ```{r}
-plot(chd_tot, odds)
-```
-```{r}
-plot(chd_tot, log_odds, xlab = "Cases of CHD", ylab = "log odds", main = "Log Odds of CHD")
-```
-For more features of `plot()` like colors, lines, labels, etc., type `?plot` into R or view the documentation [here](https://www.datamentor.io/r-programming/plot-function/)
-
-GG PLOT VERSION
-```{r}
 chd_odds <- cbind.data.frame(chd_tot, odds)
 plotodds <- ggplot(chd_odds, aes(chd_tot, odds))
 plotodds + geom_point()
 ```
+The basic ggplot is very barebones. However, the beauty of R is that your plot is customizable in almost every way you can imagine. You can add labels and annotations, change the color or shape of your points, include a legend, etc. To see the full suite of capabilities, check out the [full documentation](https://ggplot2.tidyverse.org/reference/) online.
+```{r}
 
+plotodds <- ggplot(cbind.data.frame(chd_tot, log_odds), aes(chd_tot, log_odds))
+plotodds <- plotodds + geom_point() +
+                       labs(title = "CHD Log Odds", x = "Cases of CHD", y = "Log Odds")
+```
 
 ### 2.1.2 Saving and Exporting Plots
 To save your plot for use outside of your markdown file, you can use `ggsave()` for ggplots and other grid objects. The first argument to `ggsave()` is the desired file name, given as a file path relative to your current working directory; you can also specify the file type to be exported by the extension provided here (.pdf, .png, etc.). By default, `ggsave()` will save your most recently generated plot, but if this is not what you desire, you can specify the object to be saved with the `plot` parameter. To find out more about customizing the size of the plot, resolution, scale, etc., check the documentation [here.](https://ggplot2.tidyverse.org/reference/ggsave.html)
@@ -134,11 +135,11 @@ table(first_five$bunnies, first_five$cats)
 ```
 
 ## 3.2 Merging and Appending Data
-You can merge existing datasets using joins. There are four options for joins: `left_join()`, `right_join()`, `inner_join()`, and `outer_join()`. Each option will give you a different result based on what variables you want to keep in your output if there happens to be an observation in data set A in which there is no observation with a matching key in data set B. Details [here.](https://r4ds.had.co.nz/relational-data.html#mutating-joins).
+You can merge existing datasets using joins. There are four options for joins: `left_join()`, `right_join()`, `inner_join()`, and `outer_join()`. Each option will give you a different result based on what variables you want to keep in your output if there happens to be an observation in dataset A in which there is no observation with a matching key in dataset B. Details [here.](https://r4ds.had.co.nz/relational-data.html#mutating-joins).
 
-If you want to append observations to an existing data set, you can use `rbind()` (short for row-bind), which takes two data frames as arguments. This appends the second data set to the end of the first data set. `rbind()` only works if the column names all match.
+If you want to append observations to an existing dataset, you can use `rbind()` (short for row-bind), which takes two data frames as arguments. This appends the second dataset to the end of the first dataset. `rbind()` only works if the column names all match.
 
-If you want to add additional variables of which you already have values for, you can use `cbind()` (short for column-bind). This requires the variable-to-be-appended to have the same number of observations as the existing data set.
+If you want to add additional variables of which you already have values for, you can use `cbind()` (short for column-bind). This requires the variable-to-be-appended to have the same number of observations as the existing dataset.
 
 ## 3.3 Data Types 
 Stata stores data values as either strings or numbers. There are different ways to store strings and different ways to store numbers. The describe command tells you the storage type for each variable in your dataset. You should know that numbers are designated by the following data types: byte, int, long, float, double. Strings are designated by these data types: str1, str2, ..., str80. The number after str indicates the maximum number of characters in the string.
@@ -156,3 +157,47 @@ three <- two + 1 # error in two + 1 : non-numeric argument to binary operator
 three <- as.numeric(two) + 1 # no error
 ```
 
+## 3.4 Cleaning Messy Data
+It’s difficult to provide one concise method for cleaning data since data can be "messy" for a large variety of reasons. One common problem that data has, though, is inconsistent coding. 
+
+For example, you might want to group all observations together for people who live in an apartment (versus house), but the answers to your survey (which are now in your dataset) use different strings of characters to designate "apartment." For example, the variable "housing" in the `animals2.dta` dataset takes on several different following values:
+```{r}
+table(animals$housing)
+```
+
+We can create a variable called housing_clean that takes only 2 values – "apartment"
+and "house" – by doing the following:
+
+```{r}
+animals <- mutate(animals, housing_clean = ifelse(housing == "Apartment" |
+                                                  housing == "Apt." |
+                                                  housing == "apartment unit" |
+                                                  housing == "apt" |
+                                                  housing == "apt building" |
+                                                  housing == "apartment", "apartment", "house"))
+```
+
+Typing `table(housing_clean)` will verify that housing_clean is as we want it. Note that since R is case-sensitive, it considers "Apartment" (with a capital ’A’) to be a different value as compared to "apartment."
+
+You’ll notice that the above method of creating a housing_clean variable necessitated specifying all of the "incorrect" values of the variable housing. Doing this can be incredibly tedious and time-consuming because there are sometimes tons of "incorrect" values. Fortunately, there are more automated ways to do the same thing using R’s string manipulation functions. For example, you can filter by entries in which the first two letters are "ap" using the `str_detect()` function from the `stringr` package and regular expressions ( [regex](https://medium.com/factory-mind/regex-tutorial-a-simple-cheatsheet-by-examples-649dc1c3f285)). You can use the `ignore_case = TRUE` option to do a case-insensitive match. 
+
+```{r}
+bananas <- c("banana", "Banana", "BANANA")
+str_detect(bananas, "banana")
+#> [1]  TRUE FALSE FALSE
+str_detect(bananas, regex("banana", ignore_case = TRUE))
+#> [1] TRUE TRUE TRUE
+```
+
+```{r}
+animals <- mutate(animals, housing_clean2 = ifelse(str_detect(animals$housing, 
+                                                              regex("ap.*", ignore_case = TRUE)), "apartment", "house"))
+```
+
+## 3.5 Importing/Exporting to Different File Types 
+For the most part, we've been importing data from .dta files with `read.dta()`. However, R can support many different file types including csv and xls. Simply search online for a package that supports importing your desired data type and go from there. For example, to import csv's, we use `read.csv()` from the base utils package. 
+
+When exporting, for example by using `ggsave()`, you can also change the export filetype by changing the file path extension. Most file types are supported.
+
+## 3.6 Loops
+If you're interested, search online for R documentation on for-loops and while-loops and ask your GSI if you have any questions. These techniques can be used to make your workflows more efficient.
