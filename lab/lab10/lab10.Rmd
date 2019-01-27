@@ -1,5 +1,8 @@
 ---
-title: "R for Epidemiology, Lab 10"
+title: "Lab 10"
+subtitle: "Public Health 241: Statistical Analysis of Categorical Data"
+author: "YOUR NAME / YOUR STUDENT ID HERE"
+date: "TODAY'S DATE"
 output: pdf_document
 ---
 
