@@ -1,0 +1,132 @@
+---
+title: "R for Epidemiology, Lab 10"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(foreign)
+library(lmtest)
+library(multcomp)
+titanic <- read.dta("titanic.dta")
+```
+
+The objective of this lab is to provide information regarding running logistic regressions in R. **This information should be useful for assignments 11 and 12, and for your final projects.**
+
+## 1. Running Logistic Regressions: `glm` 
+
+The `glm` function helps you find the maximum likelihood estimates for your specified logistic model. The general form of this command is as follows (this is an **example**, don't try to run this command yet):
+
+```{r glm_example, eval=FALSE}
+my.model <- glm(formula = ind.var ~ dep.var1 + dep.var2,
+                family = binomial(link='logit'), data=my.data)
+```
+
+The call to `glm()` saves the model into the variable `my.model`.  Here, the outcome (independent) variable is indicated by `ind.var`, and the dependent variable names following the `~` explain to the model which columns you are providing as your significant variables to the model. Finally, we must specify a type of outcome variable, which you can see in the example is a `binomial(link='logit')` variable. The order of the dependent variables does not matter. For example, take a look at the command below. The titanic dataset for this lab is loaded as `titanic`:
+``` {r titanic_example}
+logit.titanic <- glm(survived ~ pclass + age,
+                     family=binomial(link='logit'), data=titanic)
+```
+
+The command above corresponds to the following model:
+$$\log\Big(\frac{P(\textrm{survived} | \textrm{pclass, age})}{1 - P(\textrm{survived} | \textrm{pclass, age})}\Big) = a + b * \textrm{pclass} + c * \textrm{age}$$
+
+or
+
+$$\log\Big(\frac{P(\textrm{survived} | \textrm{pclass, age})}{1 - P(\textrm{survived} | \textrm{pclass, age})}\Big) = \beta_0 + \beta_1 * \textrm{pclass} + \beta_2 * \textrm{age}$$
+
+Let's take a look at the output of the glm function we called above by using another function call `summary()`.
+
+``` {r output}
+summary(logit.titanic)
+```
+
+Here's how we should interpret the output above:
+
+* **Deviance** is a measure of badness of fit - higher numbers indicate worse fit. Every data point in the model has a deviance associated with it, which is calculated, and a non-parametric description is shown below
+
+* **Coeffcients**: This row contains point estimates for your model coefficients, including an estimate of your intercept.
+  * `Estimate`: For example, the estimate of our intercept is 3.114, the estimate of the coefficient on `pclass` is -1.101, and the estimate of the coefficient for `age` is -0.3699.
+  * `Std. Error`: This is self-explanatory. This is an estimate of how much, on average, the current estimates would move if the study were re-run repeatedly with different data.
+  * `z value`: This is the quotient of the estimate by the standard error
+  * `Pr(>|z|)`: lists the tailed p-values that correspond to those z-values in a standard normal distribution.
+
+* There are two forms of deviance:
+    * *Null deviance* shows how well the outcome variable is predicted by a model that includes only the intercept. i.e. The null hypothesis of this model is that all of your covariate coefficients are zero.
+    * *Residual deviance* is different in that it applies all weights and displacements. This is the one that shows in the description.
+
+* The **Akaike Information Criterion (AIC)** allows you a method for assessing the quality of your model in comparison to other models that you have created that are more or less complex. You should choose the smallest AIC when comparing.
+
+* **Fisher scoring** maximizes the likelihood by iteratively getting closer to the maximum by taking steps. This is also commonly known as "iteratively reweighted least squares".
+
+To find the confidence intervals of the coefficient estimates, we can use the `confint` function:
+
+``` {r confint}
+confint(logit.titanic)
+```
+
+If we want to find a 90% confident interval for these input variables based on our logistical regression, we can specify that value as an argument to the function:
+
+``` {r confint_90}
+confint(logit.titanic, level=.90)
+```
+
+## 2. The Likelihood Ratio Test
+
+The Likelihood Ratio Test is used to compare 2 nested models. When you run a logistic regression, R can give you the model’s log likelihood value using a function called ``.  Let’s run a logistic regression model for which we’re interested in the likelihood ratio test:
+
+``` {r more.titanic}
+logit.titanic <- glm(survived ~ pclass + age,
+                     family=binomial(link='logit'), data=titanic)
+```
+
+In the model above, the log likelihood is -628.09. You can display it by executing this command `logLik(glm.object)`:
+
+``` {r logLik.ex}
+logLik(logit.titanic)
+```
+
+Using this value, you can calculate the likelihood ratio test statistic, as follows:
+
+$$2 \times (\text{log likelihood}_{\text{full model}} - \text{log likelihood}_{\text{restricted model}})$$
+
+where the restricted model is the "intercept-only model" where $\beta_1 = \beta_2 = 0$. This can be easily done by creating a new null `glm` model and following the above steps to find the log likelihood, and plugging into the equation for the likelihood ratio test:
+
+``` {r null.loglik}
+logit.null.titanic <- glm(survived ~ 1,
+                     family=binomial(link='logit'), data=titanic) # null model
+```
+
+You can compute the log-likelihood ratio test between a full and null model by hand above, or compute it in R with a function from the `lmtest` package called `lrtest` as shown below.
+
+``` {r ratio.test}
+lrtest(logit.titanic)
+```
+
+What does this result tell you about the plausibility of the "full" model? In other words, what was your $H_0$ here, and how can you reject it?
+
+## 3. Using `glht` to Find Estimates for Combinations of Coefficients
+
+The `glht` function can be used to estimate lnear combinations of coefficients. This command is especially useful when your model contains interaction terms and you want to find confidence intervals around estimtaes of odds ratios that involve your interaction terms. For example:
+
+``` {r glht}
+glht.mod <- glht(logit.titanic)
+confint(glht.mod)
+```
+
+## 4. The Predict Command
+
+The `predict` command uses the estimated coefficients from the regression model that you most recently ran to assign a probability of disease (or whatever your outcome may be) to each observation in your dataset. These probabilities are contained in a newly created variable with whatever name you specify. For example, the following lines of code first fit a model (i.e., find the maximum likelihood coefficients), which you can then use to find the estimated probabilities of the outcome, survival, based on this model:
+
+``` {r predict.func}
+predicted.values <- predict(logit.titanic, type="response")
+predicted.values <- cut(predicted.values, 2, labels=c(0, 1))
+```
+
+Here, we've scaled based on the response variable's range, so that anything above 0.5 is returned as a survived prediction of 1, and below or equal to 0.5 as 0. We can check our model's prediction accuracy by finding the equal categories between our original target variable `titanic$survived` and `predicted.values`. First, we must change the `titanic$survived` row into a factor vector because it is currently saved as an integer. Attempting to use equality operators between two classes can lead to skewed results.
+
+``` {r final}
+sum(as.factor(titanic$survived) == predicted.values)/length(predicted.values)
+```
+
+Our model's class prediction is 70.5% accurate.
